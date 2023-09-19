@@ -10,8 +10,8 @@ const config: Config = {
     screens:{
       'sm' : '320px',
       'iphone': '414px',
-      'hd' : '720px',
-      'fhd' : '1920px'
+      'hd' : '768px',
+      'fhd' : '1440px'
     },
     extend: {
       backgroundImage: {
