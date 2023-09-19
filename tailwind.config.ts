@@ -7,6 +7,12 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    screens:{
+      'sm' : '320px',
+      'iphone': '414px',
+      'hd' : '720px',
+      'fhd' : '1920px'
+    },
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -14,6 +20,9 @@ const config: Config = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
     },
+    fontFamily:{
+      Poppins:["Poppins", "sans-serif"]
+    }
   },
   plugins: [],
 }
