@@ -1,7 +1,8 @@
 "use client"
 import * as SVG from "./assets/SVG";
-import { useState } from "react";
+import React, { useState } from "react";
 import { api } from "@/utils/api";
+import isEmailValid from "@/helpers/emailValid";
 
 export default function Home() {
   const [isPasswordVisibleConfirm, setPasswordVisibilityConfirm] = useState<boolean>(false);
@@ -10,6 +11,11 @@ export default function Home() {
   const [emailReg, setEmailReg] = useState<string>("");
   const [passwordReg, setPasswordReg] = useState<string>("");
   const [passwordConf, setPasswordConf] = useState<string>("");
+  const [emailValid, setEmailValid] = useState<boolean>(false);
+  //login
+  const [emailLog, setemailLog] = useState<string>("");
+  const [passwordLog, setpasswordLog] = useState<string>("");
+
   const togglePasswordVisibility = () => {
     setPasswordVisibility(!isPasswordVisible);
   };
@@ -18,14 +24,43 @@ export default function Home() {
   };
 
   const clean = () =>{
-    setRegister(true);
+    setRegister(false);
     setEmailReg("");
     setPasswordReg("");
     setPasswordConf("");
   }
 
+  const loginUser = async () =>{
+    if(emailLog != '' && passwordLog != '')
+    {
+      try{
+        const response = await api.post('/login',{
+          email: emailLog,
+          senha: passwordLog
+        })
+        if(response.status == 200)
+        {
+          alert("passou");
+        }
+        else if(response.status == 204)
+        {
+          alert("Senha inválida!")
+        }
+        else if(response.status == 206){
+          alert("Usuário não encontrado!")
+        }
+      }catch(error){
+        alert('Erro: Contate o administrador!')
+        console.log('error: ', error)
+      }
+    }
+    else{
+      alert("Por favor preencha os campos!")
+    }
+  }
+
   const registerUser = async () =>{
-    if(emailReg != '' && passwordReg != '' && passwordReg == passwordConf)
+    if(emailReg != '' && passwordReg != '' && passwordReg == passwordConf && emailValid == true)
     {
       try{
         const response = await api.post('/register',{
@@ -50,8 +85,20 @@ export default function Home() {
       alert("Por favor preencha os campos!")
     }
   }
+  const emailCadastro = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setEmailReg(e.target.value)
+    if(e.target.value == '')
+    {
+      setEmailValid(true)
+    }
+    else
+    {
+      setEmailValid(isEmailValid(e.target.value))
+    }
+  }
+  
   return (
-    <>
+    <view>
       {!register && 
         <main className="flex min-h-screen gap-0 content-center items-center flex-col iphone:flex-col fhd:flex-row fhd:gap-[300px] 
           hd:flex-row hd:gap-[200px]
@@ -69,12 +116,16 @@ export default function Home() {
             <input
               className="bg-[#C7C7C7] p-5 mt-8 mb-4 text-black outline-0 placeholder-[#717171] w-full"
               placeholder="Email"
+              value={emailLog}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>)=> setemailLog(e.target.value)}
               type="text"
             />
             <div className="relative">
               <input
                 className="bg-[#C7C7C7] p-5 mb-5 placeholder-[#717171] outline-0 text-black w-full xl:pr-[80px] 2xl:pr-[100px]"
                 placeholder="Senha"
+                value={passwordLog}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>)=> setpasswordLog(e.target.value)}
                 type={isPasswordVisible ? 'text' : 'password'}
               />
               <button
@@ -87,7 +138,10 @@ export default function Home() {
                 <SVG.eye className="w-[30px] h-[30px] absolute top-5 right-3" />
               </button>
             </div>
-            <button className="bg-blue-600 h-[62px] gap-10 mb-2 p-[21px] text-[#FFFF] font-medium iphone:font-bold">
+            <button 
+              onClick={loginUser}
+              className="bg-blue-600 h-[62px] gap-10 mb-2 p-[21px] 
+              text-[#FFFF] font-medium iphone:font-bold">
               Login
             </button>
             <label className="text-[#FFF] font-Poppins iphone:text-[15px] ">
@@ -97,9 +151,9 @@ export default function Home() {
         </main>
       }
       {register &&
-        <main className="flex min-h-screen gap-0 content-center items-center sm:flex-col iphone:flex-col  fhd:flex-row fhd:gap-[300px] 
-          hd:flex-row hd:gap-[200px]
-          "> 
+        <main className="flex min-h-screen gap-0 content-center items-center flex-col iphone:flex-col fhd:flex-row fhd:gap-[300px] 
+        hd:flex-row hd:gap-[200px]
+        "> 
           <SVG.Home_svg
             className='iphone:ml-8 iphone:w-[400px] iphone:h-[412px]  sm:w-[360px] sm:h-[372px] hd:ml-[100px]  hd:w-[600px] hd:h-[612px] fhd:w-[900px] fhd:h-[912px] fhd:ml-[200px]'
           />
@@ -111,11 +165,14 @@ export default function Home() {
               Faça seu login ou cadastre-se.
             </label>
             <input value={emailReg}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>)=> setEmailReg(e.target.value)}
+              onChange={emailCadastro}
               className="bg-[#C7C7C7] p-5 mt-8 mb-4 text-black outline-0 placeholder-[#717171] w-full"
               placeholder="Email"
               type="text"
             />
+            {!emailValid && emailReg &&
+              <label className="font-Poppins text-red-600 mt-[-15px] text-sm" >Email inválido</label>
+            }
             <div className="relative">
               <input value={passwordReg}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>)=> setPasswordReg(e.target.value)}
@@ -164,6 +221,6 @@ export default function Home() {
           </form>
         </main>
       }
-    </>
+    </view>
   )
 }
