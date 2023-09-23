@@ -1,6 +1,4 @@
-"use client";
 import { createContext, ReactNode, useContext, useState, useEffect  } from "react";
-
 const STORAGE_KEY = 'loginContet';
 
 export type usuario = {
@@ -17,14 +15,20 @@ type AuthContextProps = {
 const UserContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 const LoggedUserProvider = ({ children } : {children: ReactNode}) => {
-    const [user, setUser] = useState<usuario | null>(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+    //const [user, setUser] = useState<usuario | null>(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
     
+    const [user, setUser] = useState<usuario | null>(typeof window !== "undefined" ? 
+        JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') : null
+        );
+        
     useEffect(()=>{
+       
        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     },[user])
 
     const login = (user: usuario)=> {
         setUser(user);
+        console.log(user)
     }
     const logout = () => {
         console.log('logout');

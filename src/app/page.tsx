@@ -9,10 +9,11 @@ import isEmailValid from "@/helpers/emailValid";
 import { useAuth } from "./context/userContext";
 import { useRouter } from 'next/navigation';
 
+
 export default function Home() {
   const { login } = useAuth();
   const router = useRouter();
-
+  
   const [isPasswordVisibleConfirm, setPasswordVisibilityConfirm] = useState<boolean>(false);
   const [isPasswordVisible, setPasswordVisibility] = useState<boolean>(false);
   const [register, setRegister] = useState<boolean>(false);
@@ -21,7 +22,6 @@ export default function Home() {
   const [passwordConf, setPasswordConf] = useState<string>("");
   const [emailValid, setEmailValid] = useState<boolean>(false);
   //login
-  const [loading, setLoading] = useState(false);
   const [emailLog, setemailLog] = useState<string>("");
   const [passwordLog, setpasswordLog] = useState<string>("");
 
@@ -46,11 +46,9 @@ export default function Home() {
           email: emailLog,
           senha: passwordLog,
         }).then((response) => {
-          statusCode = response.status; // Obtém o código de status da resposta
+          statusCode = response.status;
       
           if (statusCode === 200) {
-            // Usuário aceito
-            // Aqui você pode tratar a resposta de sucesso
             const user = {
               email: response.data.email,
               token: response.data.token
@@ -58,12 +56,8 @@ export default function Home() {
             login(user);
             router.push('/Home');
           } else if (statusCode === 204) {
-            // Email não encontrado
-            // Aqui você pode tratar a resposta de erro
             console.error('Email não encontrado! ', response.status);
           } else if (statusCode === 401) {
-            // Senha inválida
-            // Aqui você pode tratar a resposta de erro
             console.error('Senha inválida! ', response.status);
           } else {
             // Outro erro
@@ -120,10 +114,10 @@ export default function Home() {
   }
   
   return (
-    <>
+    <main>
       <ToastContainer
         position="top-right"
-        autoClose={2000}
+        autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -131,8 +125,8 @@ export default function Home() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
-        />
+        theme="light"
+      />
       {!register && 
       
         <main className="flex min-h-screen gap-0 content-center items-center flex-col iphone:flex-col fhd:flex-row fhd:gap-[300px] 
@@ -258,6 +252,6 @@ export default function Home() {
           </form>
         </main>
       }
-    </>
+    </main>
   )
 }

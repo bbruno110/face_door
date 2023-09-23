@@ -1,4 +1,3 @@
-"use client"
 import { LoggedUserProvider } from "./userContext"
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) =>{
