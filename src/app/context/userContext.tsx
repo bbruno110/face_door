@@ -12,23 +12,29 @@ type AuthContextProps = {
     logout: () => void;
 }
 
+const initialState = {
+    email: '',
+    token: ''
+}
+
 const UserContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 const LoggedUserProvider = ({ children } : {children: ReactNode}) => {
     //const [user, setUser] = useState<usuario | null>(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
     
     const [user, setUser] = useState<usuario | null>(typeof window !== "undefined" ? 
-        JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') : null
+        JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') : initialState
         );
         
     useEffect(()=>{
-       
-       localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+        if (user !== initialState) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+        }
     },[user])
 
     const login = (user: usuario)=> {
         setUser(user);
-        console.log(user)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     }
     const logout = () => {
         console.log('logout');

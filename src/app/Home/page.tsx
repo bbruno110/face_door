@@ -1,18 +1,17 @@
 "use client"
 import { useAuth } from "@/app/context/userContext";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 
 const Home = () =>{
-
     const  { user } = useAuth();
+
+    const teste = user?.email;
+
     console.log(user)
     return(
         <main>
-            <h1>sadas</h1>
-            <div>
-                {user?.email}
-            </div>
+            <h1>{teste}</h1>
         </main>
     );
 }
