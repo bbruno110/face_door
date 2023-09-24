@@ -6,12 +6,9 @@ import React, { useState, useEffect } from "react";
 const Home = () =>{
     const  { user } = useAuth();
 
-    const teste = user?.email;
-
-    console.log(user)
     return(
         <main>
-            <h1>{teste}</h1>
+            <h1>{user?.email}</h1>
         </main>
     );
 }

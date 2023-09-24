@@ -1,4 +1,6 @@
+"use client"
 import { createContext, ReactNode, useContext, useState, useEffect  } from "react";
+
 const STORAGE_KEY = 'loginContet';
 
 export type usuario = {
@@ -20,25 +22,31 @@ const initialState = {
 const UserContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 const LoggedUserProvider = ({ children } : {children: ReactNode}) => {
+    const [isMounted, setIsMounted] = useState(false);
     //const [user, setUser] = useState<usuario | null>(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
     
     const [user, setUser] = useState<usuario | null>(typeof window !== "undefined" ? 
         JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') : initialState
         );
-        
-    useEffect(()=>{
-        if (user !== initialState) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-        }
-    },[user])
 
     const login = (user: usuario)=> {
         setUser(user);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     }
     const logout = () => {
         console.log('logout');
     }
+
+
+    useEffect(() => {
+        setIsMounted(true);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+     }, [user]);
+  
+     if (!isMounted) {
+        return null;
+     }
+  
+
     return (
         <UserContext.Provider value={{ user, login, logout }}>{children}</UserContext.Provider>
     );
