@@ -1,4 +1,3 @@
-"use client"
 import { AppProvider } from '@/app/context'
 import './globals.css'
 import type { Metadata } from 'next'
