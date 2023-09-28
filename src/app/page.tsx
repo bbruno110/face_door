@@ -280,7 +280,7 @@ export default function Home() {
         </main>
       )}
       <VLibras forceOnload />
-      {/* {process.env.NODE_ENV === "production" && <VLibras forceOnload />} */}
+      {process.env.NODE_ENV === "production" && <VLibras forceOnload />}
     </main>
   )
 }
