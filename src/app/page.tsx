@@ -1,6 +1,6 @@
 "use client"
 import * as SVG from "./assets/SVG";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "@/utils/api";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 
 
 export default function Home() {
+  const  { user } = useAuth();
   const { login } = useAuth();
   const router = useRouter();
   
@@ -23,6 +24,7 @@ export default function Home() {
   const [emailValid, setEmailValid] = useState<boolean>(false);
   //login
   const [emailLog, setemailLog] = useState<string>("");
+  const [disabledLog, setDisabledLog] = useState<boolean>(false)
   const [passwordLog, setpasswordLog] = useState<string>("");
 
   const togglePasswordVisibility = () => {
@@ -40,21 +42,25 @@ export default function Home() {
   }
 
   const loginUser = async () => {
-    let statusCode: number = 0;
+    if(emailLog && passwordLog){
+      setDisabledLog(true)
+      let statusCode: number = 0;
       toast.promise(
         api.post('/login', {
           email: emailLog,
           senha: passwordLog,
         }).then((response) => {
           statusCode = response.status;
-      
           if (statusCode === 200) {
             const user = {
               email: response.data.email,
               token: response.data.token
             }
+
             login(user);
-            router.push('/Home');
+            setTimeout(() => {
+              router.push('/Home');
+          }, 2000);
           } else if (statusCode === 204) {
             console.error('Email não encontrado! ', response.status);
           } else if (statusCode === 401) {
@@ -67,11 +73,30 @@ export default function Home() {
         }),
         {
           pending: 'Aguardando...',
-          success: statusCode !== 200 ? 'Entrada aceita!' : 'Email não encontrado!',
-          error: statusCode === 401 ? 'Erro: Contate o administrador!' : 'Senha inválida!' ,
+          success: 'Entrada aceita!',
+          error: 'Senha inválida!' ,
         }
+      ).finally(
+        ()=>{
+          setTimeout(() => {
+            setDisabledLog(false);
+        }, 4100)
+          }
       );
-    
+
+    }
+    else{
+      toast.warn('Preencha os campos', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+    }
   };
 
   const registerUser = async () =>{
@@ -170,6 +195,7 @@ export default function Home() {
             </div>
             <button 
               type="button"
+              disabled={disabledLog}
               onClick={(e) => {e.preventDefault(); loginUser();}}
               className="bg-blue-600 h-[62px] gap-10 mb-2 p-[21px] 
               text-[#FFFF] font-medium iphone:font-bold">

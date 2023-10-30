@@ -33,6 +33,7 @@ const LoggedUserProvider = ({ children } : {children: ReactNode}) => {
         setUser(user);
     }
     const logout = () => {
+        setUser(null);
         console.log('logout');
     }
 
