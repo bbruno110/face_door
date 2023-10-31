@@ -75,7 +75,7 @@ const Home = () =>{
                 console.log(params);
                 return (
                 <>
-                    <Avatar src={`http://192.168.1.22:8081/images/${params.value}`} />
+                    <Avatar src={`https://face-door-back.onrender.com/images/${params.value}`} />
                 </>
                 );
             }
@@ -119,7 +119,7 @@ const Home = () =>{
                 {loading && <Skeleton variant="rectangular" animation="pulse" sx={{ bgcolor: '#112131', borderRadius: 2, marginTop: 2, marginBottom: 18 }}  width={'100vh'} height={'40vh'}/>}
                 {!loading &&
                     <div className="container ">
-                        <Avatar className="absolute left-4 hd:left-[740px]" sx={{ width: 62, height: 62 }} src={`http://192.168.1.22:8081/images/${user?.caminho}`}></Avatar>
+                        <Avatar className="absolute left-4 hd:left-[740px]" sx={{ width: 62, height: 62 }} src={`https://face-door-back.onrender.com/images/${user?.caminho}`}></Avatar>
                         <h1 className=" mb-10 mt-10 font-medium text-4xl text-[#E7EDF4]">Informações de usuário</h1>
                         <div className=" w-[290px] hd:w-[600px]">
                             <Box sx={{ height: '80%', width: '100%' }}>
