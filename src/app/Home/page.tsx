@@ -123,34 +123,36 @@ const Home = () =>{
                         <h1 className=" mb-10 mt-10 font-medium text-4xl text-[#E7EDF4]">Informações de usuário</h1>
                         <div className=" w-[290px] hd:w-[600px]">
                             <Box sx={{ height: '80%', width: '100%' }}>
-                                <DataGrid className="bg-[#112131]"
-                                    sx={{
-                                        color: '#AFC2D4',
-                                        border: 2,
-                                        borderColor: '#040F1A',
-                                    }}
-                                    rows={rowFilter}
-                                    columns={columns}
-                                    slots={{ toolbar: CustomToolbar }}
-                                    pageSizeOptions={[5]}
-                                    disableColumnFilter
-                                    disableColumnSelector
-                                    disableDensitySelector
-                                    onRowSelectionModelChange={(newSelection) => {
-                                        if (newSelection.length === 0) {
-                                            FinderLogout()
-                                        } else {
-                                            newSelection.forEach((id) => {
-                                                const userId = Number(id);
-                                                if (!isNaN(userId)) {
-                                                    const user = {
-                                                        id: userId
-                                                    }
-                                                    Finder(user)
+                            <DataGrid 
+                                className="bg-[#112131]"
+                                sx={{
+                                    color: '#AFC2D4',
+                                    border: 2,
+                                    borderColor: '#040F1A',
+                                }}
+                                rows={rowFilter}
+                                columns={columns}
+                                slots={{ toolbar: CustomToolbar }}
+                                pageSizeOptions={[5]}
+                                disableColumnFilter
+                                disableColumnSelector
+                                disableDensitySelector
+                                checkboxSelection
+                                onRowSelectionModelChange={(newSelection) => {
+                                    if (newSelection.length === 0) {
+                                        FinderLogout()
+                                    } else {
+                                        const userId = Number(newSelection[newSelection.length - 1]);
+                                        if (!isNaN(userId)) {
+                                            const user = {
+                                                id: userId
                                             }
-                                        });
-                                      }}}
-                                />
+                                            Finder(user)
+                                        }
+                                    }
+                                }}
+                            />
+
                             </Box>
                         </div>
                     </div>
