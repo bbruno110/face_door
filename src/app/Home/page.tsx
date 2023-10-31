@@ -17,41 +17,52 @@ type Linhas = {
 }
 interface Data {
     _id?: number;
+    nome: string;
     email: string;
     caminho: string;
 }
 
 const Home = () =>{
-    const { user } = useAuth();
+    const { user, userFind, Finder, FinderLogout } = useAuth();
     const [row, setRows] = useState<Linhas[]>([]);
     const [rowFilter, setRowsFilter] = useState<Linhas[]>([]);
     const [loading, setLoading] = useState(true);
     const [value, setValue] = useState('')
 
     useEffect(()=>{
-        if(!user?.token){
-            router.push('/');
+        FinderLogout();
+        if(user?.caminho)
+        {
+            const result = api.get('/verify',{headers:{
+                'Authorization': `Bearer ${user?.token}`
+            }}).catch((error)=>{
+                router.push('/');
+            })
         }
-        const result = api.get('/verify',{headers:{
-            'Authorization': `Bearer ${user?.token}`
-        }}).catch((error)=>{
-            
-        })
+        else{
+            router.push('/Home/Cadastro');
+        }
+
+        
         setLoading(true)
     },[])
     
     useEffect(()=>{
+        if(!user?.token){
+            router.push('/');
+        }
+        else{
         const data = api.get('/all', {headers:{
             'Authorization': `Bearer ${user?.token}`}}).then((response)=>{
                 const rows = response.data.map((item: Data) => {
-                    return {id: item._id, email: item.email, caminho: item.caminho} as Linhas;
+                    return {id: item._id, nome: item.nome, email: item.email, caminho: item.caminho} as Linhas;
                 });
                 setRows(rows);
                 setRowsFilter(rows)
             }).finally(() => 
-
-                    setLoading(false)
-                )
+                setLoading(false)
+            )
+        }
     },[])
     
 
@@ -59,17 +70,18 @@ const Home = () =>{
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 50, resizable: false },
-        { field: 'caminho', headerName: '#', width: 60, resizable: false,
+        { field: 'caminho', headerName: '#', width: 62, resizable: false,
             renderCell: (params) => {
                 console.log(params);
                 return (
                 <>
-                    <Avatar src={`https://face-door-back.onrender.com/images/${params.value}`} />
+                    <Avatar src={`http://192.168.1.22:8081/images/${params.value}`} />
                 </>
                 );
             }
         },
-        { field: 'email', headerName: 'Email', width: 450 },
+        { field: 'nome', headerName: 'Nome', width: 200 },
+        { field: 'email', headerName: 'Email', width: 250 },
     ];
     function CustomToolbar() {  
         return (
@@ -78,7 +90,7 @@ const Home = () =>{
                     className=" placeholder-[#3A536B] text-xl font-semibold text-slate-300 bg-[#040F1A] p-3 rounded focus:outline-none w-full pr-10"
                     type="text"
                     value={value}
-                    placeholder="Adicione um novo usuário"
+                    placeholder="Busque pelo usuário"
                     autoFocus
                     onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
                         const filteredRows = row.filter((item) => {
@@ -107,8 +119,8 @@ const Home = () =>{
                 {loading && <Skeleton variant="rectangular" animation="pulse" sx={{ bgcolor: '#112131', borderRadius: 2, marginTop: 2, marginBottom: 18 }}  width={'100vh'} height={'40vh'}/>}
                 {!loading &&
                     <div className="container ">
-                        <Avatar className="absolute  left-[220px] hd:left-[740px]" sx={{ width: 62, height: 62 }} src={`https://face-door-back.onrender.com/images/${user?.caminho}`}></Avatar>
-                        <h1 className=" mb-10 mt-10 font-medium text-4xl text-[#E7EDF4]">Informacoes de usuario</h1>
+                        <Avatar className="absolute left-4 hd:left-[740px]" sx={{ width: 62, height: 62 }} src={`http://192.168.1.22:8081/images/${user?.caminho}`}></Avatar>
+                        <h1 className=" mb-10 mt-10 font-medium text-4xl text-[#E7EDF4]">Informações de usuário</h1>
                         <div className=" w-[290px] hd:w-[600px]">
                             <Box sx={{ height: '80%', width: '100%' }}>
                                 <DataGrid className="bg-[#112131]"
@@ -124,6 +136,20 @@ const Home = () =>{
                                     disableColumnFilter
                                     disableColumnSelector
                                     disableDensitySelector
+                                    onRowSelectionModelChange={(newSelection) => {
+                                        if (newSelection.length === 0) {
+                                            FinderLogout()
+                                        } else {
+                                            newSelection.forEach((id) => {
+                                                const userId = Number(id);
+                                                if (!isNaN(userId)) {
+                                                    const user = {
+                                                        id: userId
+                                                    }
+                                                    Finder(user)
+                                            }
+                                        });
+                                      }}}
                                 />
                             </Box>
                         </div>

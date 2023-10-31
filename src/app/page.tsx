@@ -21,6 +21,7 @@ export default function Home() {
         'Authorization': `Bearer ${user?.token}`
       }}).catch((error)=>{
         logout();
+        console.log('err')
       }).then(()=>{
         router.push('/Home')
       })
@@ -66,6 +67,8 @@ export default function Home() {
           statusCode = response.status;
           if (statusCode === 200) {
             const user = {
+              id: response.data._id,
+              nome: response.data.nome,
               email: response.data.email,
               token: response.data.token,
               caminho: response.data.caminho
@@ -74,7 +77,7 @@ export default function Home() {
             login(user);
             setTimeout(() => {
               router.push('/Home');
-          }, 2000);
+          }, 200);
           } else if (statusCode === 204) {
             console.error('Email não encontrado! ', response.status);
           } else if (statusCode === 401) {
@@ -102,7 +105,7 @@ export default function Home() {
     else{
       toast.warn('Preencha os campos', {
         position: "top-right",
-        autoClose: 2000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -156,7 +159,7 @@ export default function Home() {
     <main>
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={1000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
