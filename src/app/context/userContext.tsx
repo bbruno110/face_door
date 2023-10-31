@@ -6,6 +6,7 @@ const STORAGE_KEY = 'loginContet';
 export type usuario = {
     email: string,
     token?: string,
+    caminho?: string
 }
 
 type AuthContextProps = {
@@ -16,7 +17,8 @@ type AuthContextProps = {
 
 const initialState = {
     email: '',
-    token: ''
+    token: '',
+    caminho: ''
 }
 
 const UserContext = createContext<AuthContextProps>({} as AuthContextProps);

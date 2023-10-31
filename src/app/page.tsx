@@ -13,8 +13,21 @@ import { useRouter } from 'next/navigation';
 export default function Home() {
   const  { user } = useAuth();
   const { login } = useAuth();
+  const { logout } = useAuth();
   const router = useRouter();
-  
+  useEffect(()=>{
+    if(user?.token){
+      const result = api.get('/verify',{headers:{
+        'Authorization': `Bearer ${user?.token}`
+      }}).catch((error)=>{
+        logout();
+      }).then(()=>{
+        router.push('/Home')
+      })
+    }
+
+    //router.push('/Home');
+  },[])
   const [isPasswordVisibleConfirm, setPasswordVisibilityConfirm] = useState<boolean>(false);
   const [isPasswordVisible, setPasswordVisibility] = useState<boolean>(false);
   const [register, setRegister] = useState<boolean>(false);
@@ -54,7 +67,8 @@ export default function Home() {
           if (statusCode === 200) {
             const user = {
               email: response.data.email,
-              token: response.data.token
+              token: response.data.token,
+              caminho: response.data.caminho
             }
 
             login(user);
