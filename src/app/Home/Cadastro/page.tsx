@@ -8,6 +8,7 @@ import { api } from "@/utils/api";
 
 const Cadastro = () =>{
     const router = useRouter();
+    const [disabledBtn, setDisabledBtn] = useState<boolean>(false)
     const  { user, login, userFind,FinderLogout, Finder } = useAuth();
     const { logout } = useAuth();
     const [file, setFile] = useState<File | null>(null);
@@ -74,6 +75,7 @@ const Cadastro = () =>{
 
       const handleSalvar = async () => {
         if (btnSalvar === "Salvar") {
+            setDisabledBtn(true)
           const formData = new FormData();
           if (file) {
             formData.append('avatar', file);
@@ -96,8 +98,7 @@ const Cadastro = () =>{
             const result = await api.put("/atualizar", formData, {
               headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
                 toast.success('Usuário Atualizado')
-                console.log(response.data)
-                console.log('teste')
+                setDisabledBtn(true)
                 if(user?.id == response.data._id)
                 {
                     const user = {
@@ -114,6 +115,7 @@ const Cadastro = () =>{
               }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
 
         } else {
+            setDisabledBtn(false)
             const response = await api.post('/register',{
                 dsnome: name,
                 senha: password,
@@ -131,7 +133,9 @@ const Cadastro = () =>{
                 headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
                 }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
                 toast.success('Usuário Cadastrado')
-              }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
+              }).catch((err)=> {toast.error('Erro!. Contate o administrador')}).finally(()=>{
+                setDisabledBtn(true)
+              })
         }
       };
 
