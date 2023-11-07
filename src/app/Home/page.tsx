@@ -8,7 +8,6 @@ import { DataGrid, GridColDef , GridToolbar  } from '@mui/x-data-grid';
 import Avatar from "@mui/material/Avatar";
 import Skeleton from '@mui/material/Skeleton';
 import {FaSearch} from 'react-icons/fa'
-import Typography, { TypographyProps } from '@mui/material/Typography';
 
 type Linhas = {
     id: number,
@@ -90,7 +89,7 @@ const Home = () =>{
                     className=" placeholder-[#3A536B] text-xl font-semibold text-slate-300 bg-[#040F1A] p-3 rounded focus:outline-none w-full pr-10"
                     type="text"
                     value={value}
-                    placeholder="Busque pelo usuário"
+                    placeholder="Busque pelo email"
                     autoFocus
                     onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
                         const filteredRows = row.filter((item) => {
@@ -114,14 +113,13 @@ const Home = () =>{
     return(
         <main className="flex-1 flex justify-center items-center">
             <div className="items-center justify-center p-3 md:p-10">
-                
                 {loading && <Skeleton variant="rectangular" animation="pulse" sx={{ bgcolor: '#112131', borderRadius: 2, marginTop: 18 }}  width={'100vh'} height={50} />}
                 {loading && <Skeleton variant="rectangular" animation="pulse" sx={{ bgcolor: '#112131', borderRadius: 2, marginTop: 2, marginBottom: 18 }}  width={'100vh'} height={'40vh'}/>}
                 {!loading &&
-                    <div className="container ">
+                    <div className="container">
                         <Avatar className="absolute left-4 hd:left-[740px]" sx={{ width: 62, height: 62 }} src={`https://face-door-back.onrender.com/images/${user?.caminho}`}></Avatar>
-                        <h1 className=" mb-10 mt-10 font-medium text-4xl text-[#E7EDF4]">Informações de usuário</h1>
-                        <div className=" w-[290px] hd:w-[600px]">
+                        <h1 className=" mb-5 mt-4 font-medium text-4xl text-[#E7EDF4]">Informações de usuário</h1>
+                        <div className=" w-[290px] hd:w-[800px]">
                             <Box sx={{ height: '80%', width: '100%' }}>
                             <DataGrid 
                                 className="bg-[#112131]"
@@ -133,7 +131,14 @@ const Home = () =>{
                                 rows={rowFilter}
                                 columns={columns}
                                 slots={{ toolbar: CustomToolbar }}
-                                pageSizeOptions={[5]}
+                                initialState={{
+                                    pagination: {
+                                    paginationModel: {
+                                        pageSize: 4,
+                                    },
+                                    },
+                                }}
+                                pageSizeOptions={[4]}
                                 disableColumnFilter
                                 disableColumnSelector
                                 disableDensitySelector
@@ -150,6 +155,9 @@ const Home = () =>{
                                             Finder(user)
                                         }
                                     }
+                                    if (newSelection.length > 0) {
+                                        newSelection.shift();
+                                    }
                                 }}
                             />
 
@@ -159,6 +167,7 @@ const Home = () =>{
                 }
             </div>
         </main>
+
     );
 }
 

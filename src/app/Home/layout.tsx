@@ -8,10 +8,10 @@ interface Props {
 
 export default function InitialLayout({children}: {children: React.ReactNode}) {
   return (
-    <main>
+    <main className='  h-screen'>
       <ToastContainer
           position="top-right"
-          autoClose={1000}
+          autoClose={800}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
@@ -26,7 +26,7 @@ export default function InitialLayout({children}: {children: React.ReactNode}) {
           <Sidebar/>
         </div>
         
-        <div className="w-full overflow-y-auto h-auto z-0 mx-auto lg:m-1 m-3
+        <div className="w-full overflow-y-auto z-0 mx-auto lg:m-1 m-3
     bg-[#071422]">
           {children}
         </div>

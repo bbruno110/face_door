@@ -32,6 +32,7 @@ export default function Home() {
   const [isPasswordVisibleConfirm, setPasswordVisibilityConfirm] = useState<boolean>(false);
   const [isPasswordVisible, setPasswordVisibility] = useState<boolean>(false);
   const [register, setRegister] = useState<boolean>(false);
+  const [disabledReg, setDisabledReg] = useState<boolean>(false)
   const [emailReg, setEmailReg] = useState<string>("");
   const [passwordReg, setPasswordReg] = useState<string>("");
   const [passwordConf, setPasswordConf] = useState<string>("");
@@ -117,6 +118,7 @@ export default function Home() {
   };
 
   const registerUser = async () =>{
+    setDisabledReg(true)
     if(emailReg != '' && passwordReg != '' && passwordReg == passwordConf && emailValid == true)
     {
       try{
@@ -127,20 +129,32 @@ export default function Home() {
         if(response.status == 200)
         {
           clean();
-          alert("Usuario Criado com sucesso!");
+          toast.success("Usuario Criado com sucesso!")
+          setTimeout(() => {
+            setDisabledReg(false);
+            setRegister(false)
+          }, 1500);
         }
         else if(response.status == 204)
         {
-          alert("Usuário já existente!")
+          toast.warn("Usuário já existente!")
+          setTimeout(() => {
+            setDisabledReg(false)
+          }, 1000);
         }
       }catch(error){
-        alert('Erro: Contate o administrador!')
+        toast.error('Erro: Contate o administrador!')
         console.log('error: ', error)
+        setTimeout(() => {
+          setDisabledReg(false)
+        }, 1000);
       }
     }
     else{
-      
-      alert("Por favor preencha os campos!")
+      setTimeout(() => {
+        setDisabledReg(false)
+      }, 1200);
+      toast.info("Por favor preencha os campos!") 
     }
   }
   const emailCadastro = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -159,7 +173,7 @@ export default function Home() {
     <main>
       <ToastContainer
         position="top-right"
-        autoClose={1000}
+        autoClose={500}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -182,7 +196,8 @@ export default function Home() {
             <label className="text-[#E7EDF4] font-Poppins font-semibold iphone:text-3xl hd:text-5xl fhd:text-6xl">
               Boas Vindas!
             </label>
-            <label className="text-[#AFC2D4] font-Poppins font-medium iphone: ">
+            <label 
+              className="text-[#AFC2D4] font-Poppins font-medium iphone: ">
               Faça seu login ou cadastre-se.
             </label>
             <input
@@ -219,7 +234,7 @@ export default function Home() {
               Login
             </button>
             <label className="text-[#FFF] font-Poppins iphone:text-[15px] ">
-              Não possui uma conta? <label className="text-[#1E57F1] cursor-pointer" onClick={()=>setRegister(true)} >Cadastre-se</label> 
+              Não possui uma conta? <label className="text-[#1E57F1] cursor-pointer" onClick={()=>{if(!disabledLog){setRegister(true)}}} >Cadastre-se</label> 
             </label>
           </form>
         </main>
@@ -284,13 +299,18 @@ export default function Home() {
             </div>
             <button 
               onClick={registerUser}
+              disabled={disabledReg}
               type="button"
               className="bg-blue-600 h-[62px] gap-10 mb-2 p-[21px] text-[#FFFF] 
               font-medium iphone:font-bold">
               Cadastrar
             </button>
             
-            <label className="text-[#1E57F1] cursor-pointer font-Poppins flex items-center justify-center" onClick={() => setRegister(false)}>Voltar</label> 
+            <label className="text-[#1E57F1] cursor-pointer font-Poppins flex items-center justify-center" 
+              onClick={() => {
+                if(!disabledReg){
+                setRegister(false)}}}
+              >Voltar</label> 
 
           </form>
         </main>

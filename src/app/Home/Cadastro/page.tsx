@@ -3,20 +3,51 @@ import Skeleton from '@mui/material/Skeleton';
 import { useEffect, useState, useRef, ChangeEvent } from 'react';
 import { useAuth } from "@/app/context/userContext";
 import { useRouter } from 'next/navigation';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { api } from "@/utils/api";
 
 const Cadastro = () =>{
     const router = useRouter();
-    const [disabledBtn, setDisabledBtn] = useState<boolean>(false)
-    const  { user, login, userFind,FinderLogout, Finder } = useAuth();
-    const { logout } = useAuth();
+    const  { user, login, userFind,FinderLogout } = useAuth();
     const [file, setFile] = useState<File | null>(null);
+    const [displayFileName, setDisplayFileName] = useState('Escolher imagem');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [btnSalvar, setBtnSalvar] = useState<string>('Salvar');
     const [loading, setLoading] = useState<boolean>(true)
+    const divRef = useRef<HTMLDivElement>(null);
+    const [registroInpt, setRegistroInpt] = useState<boolean>(false);
+    const [fonte, setFonte] = useState<number>(24)
+    useEffect(() => {
+        if(divRef.current){
+            const divWidth = getComputedStyle(divRef.current).width;
+        if (file) {
+            const fileName = file.name;
+            const divWidth = getComputedStyle(divRef.current).width;
+            let maxLength;
+            if (parseInt(divWidth) === 140) {
+                maxLength = 8;
+            } else {
+                maxLength = 23;
+            }
+            if (fileName.length > maxLength) {
+                setDisplayFileName(`${fileName.substring(0, maxLength)}...`);
+            } else {
+                setDisplayFileName(fileName);
+            }
+        } else {
+            if (parseInt(divWidth) === 140) {
+                setFonte(10)
+                setDisplayFileName('Escolher imagem');
+            }
+            else{
+                setFonte(24)
+                setDisplayFileName('Escolher imagem');
+            }
+        }
+    }
+    }, [file, divRef.current, btnSalvar]);
 
     useEffect(()=>{
         setLoading(true);
@@ -67,15 +98,16 @@ const Cadastro = () =>{
 
     
 
-    const handleFileChange = async(e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files?.length) {
-          setFile(e.target.files[0]);
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (files) {
+            setFile(files[0]);
         }
-      };
+    };
 
       const handleSalvar = async () => {
+        setRegistroInpt(true)
         if (btnSalvar === "Salvar") {
-            setDisabledBtn(true)
           const formData = new FormData();
           if (file) {
             formData.append('avatar', file);
@@ -98,7 +130,7 @@ const Cadastro = () =>{
             const result = await api.put("/atualizar", formData, {
               headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
                 toast.success('Usuário Atualizado')
-                setDisabledBtn(true)
+                setRegistroInpt(false)
                 if(user?.id == response.data._id)
                 {
                     const user = {
@@ -115,7 +147,7 @@ const Cadastro = () =>{
               }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
 
         } else {
-            setDisabledBtn(false)
+            setRegistroInpt(true)
             const response = await api.post('/register',{
                 dsnome: name,
                 senha: password,
@@ -131,10 +163,11 @@ const Cadastro = () =>{
                   formData.append('id', String(response.data._id));
                 api.put("/atualizar", formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
+
                 }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
                 toast.success('Usuário Cadastrado')
               }).catch((err)=> {toast.error('Erro!. Contate o administrador')}).finally(()=>{
-                setDisabledBtn(true)
+                setRegistroInpt(false)
               })
         }
       };
@@ -147,53 +180,66 @@ const Cadastro = () =>{
                     {!loading &&
                         <div className='flex-col'>
                             <h1 className=' absolute top-10 left-30 text-xl hd:top-20 hd:left-[350px] text-[#E7EDF4] hd:text-4xl font-semibold font-Poppins'>{btnSalvar === 'Salvar' ? "Atualizar Usuário" : "Cadastre um usúario"}</h1>
-                            <div className=' bg-[#0B1B2B] p-5 rounded-sm grid gap-5 hd:w-[600px] mt-20  w-[290px]'>
+                            <div 
+                                className=' bg-[#0B1B2B] p-5 rounded-sm grid gap-5 hd:w-[600px] mt-[55px]  w-[290px]'>
                                 <h2 className=' text-[#E7EDF4] text-xl font-semibold font-Poppins'>{btnSalvar === 'Salvar' ? 'Atualizar' : 'Cadastrar'}</h2>
                                 <input className=' p-3 rounded focus:outline-none placeholder-slate-200 bg-[#112131] text-slate-200' 
                                     placeholder='Nome:'
                                     value={name}
+                                    disabled={registroInpt}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>)=> setName(e.target.value)}
                                     
                                 />
                                 <input className=' p-3 rounded focus:outline-none placeholder-slate-200 bg-[#112131] text-slate-200' 
                                     placeholder='Email:' 
                                     type="email"
+                                    disabled={registroInpt}
                                     value={email}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                                 />
                                 <input className=' p-3 rounded focus:outline-none placeholder-slate-200 bg-[#112131] text-slate-200' 
                                     placeholder='Senha:'
                                     value={password}
+                                    disabled={registroInpt}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>)=> setPassword(e.target.value)}
                                     type='password'
                                 />
 
-                                <div className='flex flex-row gap-4'>
-                                    <div className="p-5  w-full rounded-md border-2 border-[#3A536B] bg-[#112131] text-slate-200 ">
-                                        <label
-                                            htmlFor="file-upload"
-                                            className="cursor-pointer"
-                                        >
-                                            {file ? file.name : 'Escolher imagem'}
-                                        </label>
-                                        <input
-                                            id="file-upload"
-                                            type="file"
-                                            className="hidden"
-                                            onChange={handleFileChange}
-                                        />
-                                    </div>
-                                    <button
-                                        className=' p-2 w-full rounded-md border-2 border-[#3A536B] bg-[#112131] text-slate-200'
-                                        type="button"
-                                        onClick={()=>{ setFile(null) }}
+                            <div className='flex flex-row gap-4'>
+                                <div
+                                    ref={divRef} 
+                                    className="p-5 w-[140px]  hd:w-full rounded-md border-2 border-[#3A536B] bg-[#112131] text-slate-200 "
+                                >
+                                    <label
+                                        htmlFor="file-upload"
+                                        className="cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap"
+                                        style={{maxWidth: '140', fontSize: `${fonte}px`}}
                                     >
-                                        Tirar Foto
-                                    </button>
+                                        {displayFileName}
+                                    </label>
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        className="hidden"
+                                        disabled={registroInpt}
+                                        onChange={handleFileChange}
+                                    />
                                 </div>
+                                <button
+                                    className=' p-2 w-full rounded-md border-2 border-[#3A536B] bg-[#112131] text-slate-200'
+                                    type="button"
+                                    style={{fontSize: `${fonte}px`}}
+                                    disabled={registroInpt}
+                                    onClick={()=>{ setFile(null) }}
+                                >
+                                    Remover Foto
+                                </button>
+                            </div>
+
                                     <button
                                         className=' p-2 w-full rounded-md  bg-[#3294F8] text-slate-200'
                                         type="button"
+                                        disabled={registroInpt}
                                         onClick={handleSalvar}
                                     >
                                         {btnSalvar}
