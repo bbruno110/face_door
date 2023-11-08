@@ -8,10 +8,10 @@ interface Props {
 
 export default function InitialLayout({children}: {children: React.ReactNode}) {
   return (
-    <main className='  h-screen'>
+    <main className='h-screen'>
       <ToastContainer
           position="top-right"
-          autoClose={800}
+          autoClose={500}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick

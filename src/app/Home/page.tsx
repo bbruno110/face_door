@@ -2,15 +2,19 @@
 import { useAuth } from "@/app/context/userContext";
 import React, { useState, useEffect } from "react";
 import { api } from "@/utils/api";
+import { usePathname } from "next/navigation";
 import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef , GridToolbar  } from '@mui/x-data-grid';
 import Avatar from "@mui/material/Avatar";
 import Skeleton from '@mui/material/Skeleton';
 import {FaSearch} from 'react-icons/fa'
+import { url } from "@/utils/api";
+
 
 type Linhas = {
     id: number,
+    nome: string,
     email: string,
     caminho: string
 }
@@ -27,7 +31,7 @@ const Home = () =>{
     const [rowFilter, setRowsFilter] = useState<Linhas[]>([]);
     const [loading, setLoading] = useState(true);
     const [value, setValue] = useState('')
-
+    const router = useRouter();
     useEffect(()=>{
         FinderLogout();
         if(user?.caminho)
@@ -40,13 +44,11 @@ const Home = () =>{
         }
         else{
             router.push('/Home/Cadastro');
-        }
-
-        
+        }   
         setLoading(true)
     },[])
-    
     useEffect(()=>{
+        router.refresh()
         if(!user?.token){
             router.push('/');
         }
@@ -63,18 +65,16 @@ const Home = () =>{
             )
         }
     },[])
-    
-
-    const router = useRouter();
+        
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 50, resizable: false },
         { field: 'caminho', headerName: '#', width: 62, resizable: false,
             renderCell: (params) => {
-                console.log(params);
                 return (
                 <>
-                    <Avatar src={`https://face-door-back.onrender.com/images/${params.value}`} />
+                    {!loading &&
+                    <Avatar src={`${url}/images/${params.value}`} />}
                 </>
                 );
             }
@@ -82,6 +82,7 @@ const Home = () =>{
         { field: 'nome', headerName: 'Nome', width: 200 },
         { field: 'email', headerName: 'Email', width: 250 },
     ];
+
     function CustomToolbar() {  
         return (
             <div className="relative  w-full">
@@ -93,7 +94,7 @@ const Home = () =>{
                     autoFocus
                     onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
                         const filteredRows = row.filter((item) => {
-                        return item.email.indexOf(e.target.value) !== -1;
+                        return item.email.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1;
                         });
                         setValue(e.target.value)
                         setRowsFilter(filteredRows);
@@ -117,7 +118,7 @@ const Home = () =>{
                 {loading && <Skeleton variant="rectangular" animation="pulse" sx={{ bgcolor: '#112131', borderRadius: 2, marginTop: 2, marginBottom: 18 }}  width={'100vh'} height={'40vh'}/>}
                 {!loading &&
                     <div className="container">
-                        <Avatar className="absolute left-4 hd:left-[740px]" sx={{ width: 62, height: 62 }} src={`https://face-door-back.onrender.com/images/${user?.caminho}`}></Avatar>
+                        <Avatar className="absolute left-4 hd:left-[740px]" sx={{ width: 62, height: 62 }} src={`${url}/images/${user?.caminho}`}></Avatar>
                         <h1 className=" mb-5 mt-4 font-medium text-4xl text-[#E7EDF4]">Informações de usuário</h1>
                         <div className=" w-[290px] hd:w-[800px]">
                             <Box sx={{ height: '80%', width: '100%' }}>

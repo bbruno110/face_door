@@ -190,7 +190,7 @@ export default function Home() {
           "> 
           
           <SVG.Home_svg
-            className='iphone:ml-8 iphone:w-[400px] iphone:h-[412px]  hd:ml-[50px]  hd:w-[600px] hd:h-[612px] fhd:w-[900px] fhd:h-[912px] fhd:ml-[100px]'
+            className='iphone:ml-8 iphone:w-[400px] iphone:h-[412px]  hd:ml-[50px]  hd:w-[600px] hd:h-[605px] fhd:w-[900px] fhd:h-[912px] fhd:ml-[100px]'
           />
           <form className="flex flex-col hd:mr-8 iphone:mr-0 iphone:w-[374px] iphone:mt-5 fhd:w-[620px] hd:w-[520px]">
             <label className="text-[#E7EDF4] font-Poppins font-semibold iphone:text-3xl hd:text-5xl fhd:text-6xl">
@@ -244,7 +244,7 @@ export default function Home() {
         hd:flex-row hd:gap-[200px]
         "> 
           <SVG.Home_svg
-            className='iphone:ml-8 iphone:w-[400px] iphone:h-[412px]  sm:w-[360px] sm:h-[372px] hd:ml-[100px]  hd:w-[600px] hd:h-[612px] fhd:w-[900px] fhd:h-[912px] fhd:ml-[200px]'
+            className='iphone:ml-8 iphone:w-[400px] iphone:h-[412px]  sm:w-[360px] sm:h-[372px] hd:ml-[100px]  hd:w-[600px] hd:h-[605px] fhd:w-[900px] fhd:h-[912px] fhd:ml-[200px]'
           />
           <form className="flex flex-col iphone:w-[374px] fhd:w-[420px]">
             <label className="text-[#E7EDF4] font-Poppins font-semibold iphone:text-3xl hd:text-5xl fhd:text-6xl">

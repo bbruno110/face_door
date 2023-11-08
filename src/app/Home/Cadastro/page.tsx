@@ -125,6 +125,9 @@ const Cadastro = () =>{
           if (name) {
             formData.append('nome', name);
           }
+          if (email) {
+            formData.append('email', email);
+          }
           formData.append('password', password);
       
             const result = await api.put("/atualizar", formData, {
@@ -148,27 +151,34 @@ const Cadastro = () =>{
 
         } else {
             setRegistroInpt(true)
-            const response = await api.post('/register',{
-                dsnome: name,
-                senha: password,
-                nome: email
-              }).then((response) =>{
-                const formData = new FormData();
-                if (file) {
-                    formData.append('avatar', file);
-                  }
-                  if (name) {
-                    formData.append('nome', name);
-                  }
-                  formData.append('id', String(response.data._id));
-                api.put("/atualizar", formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
-
-                }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
-                toast.success('Usuário Cadastrado')
-              }).catch((err)=> {toast.error('Erro!. Contate o administrador')}).finally(()=>{
+            if(!email || !password || !name || displayFileName == 'Escolher imagem')
+            {
+                toast.warn('Preencha os campos')
                 setRegistroInpt(false)
-              })
+            }
+            else {
+                const response = await api.post('/register',{
+                    dsnome: name,
+                    senha: password,
+                    nome: email
+                  }).then((response) =>{
+                    const formData = new FormData();
+                    if (file) {
+                        formData.append('avatar', file);
+                      }
+                      if (name) {
+                        formData.append('nome', name);
+                      }
+                      formData.append('id', String(response.data._id));
+                    api.put("/atualizar", formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
+    
+                    }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
+                    toast.success('Usuário Cadastrado')
+                  }).catch((err)=> {toast.error('Erro!. Contate o administrador')}).finally(()=>{
+                    setRegistroInpt(false)
+                  })
+            }
         }
       };
 

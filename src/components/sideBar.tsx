@@ -24,7 +24,7 @@ const Sidebar = () => {
                 <div className=' mt-14 flex flex-col gap-4 relative'>
                 {
                     menus?.map((menu, i) =>(
-                    <Link href={menu.link} key={i} className='flex items-center text-md gap-3.5 
+                    <Link href={menu.link} replace={true} key={i} className='flex items-center text-md gap-3.5 
                     font-MontSerrat font-medium p-2  rounded-md active:text-[#3294F8]'>
                     <div>{React.createElement(menu.icon, { size: "50" })}</div>
                         <h2 className={`whitespace-pre duration-500 menu-name hidden hd:block`}>
