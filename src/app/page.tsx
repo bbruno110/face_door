@@ -98,7 +98,7 @@ export default function Home() {
         ()=>{
           setTimeout(() => {
             setDisabledLog(false);
-        }, 4100)
+        }, 1100)
           }
       );
 

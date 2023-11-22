@@ -40,6 +40,7 @@ const Sidebar = () => {
                     <IoMdExit size={42} />
                     <h1 className=' mt-2 text-xl hidden hd:block'>Logout</h1>
                 </Link>
+                
             </div>
         </div>
     )

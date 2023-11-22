@@ -18,6 +18,7 @@ const Cadastro = () =>{
     const [loading, setLoading] = useState<boolean>(true)
     const divRef = useRef<HTMLDivElement>(null);
     const [registroInpt, setRegistroInpt] = useState<boolean>(false);
+    const [deleteInpt, setDeleteInpt] = useState<boolean>(false);
     const [fonte, setFonte] = useState<number>(24)
     useEffect(() => {
         if(divRef.current){
@@ -104,83 +105,92 @@ const Cadastro = () =>{
             setFile(files[0]);
         }
     };
-
-      const handleSalvar = async () => {
-        setRegistroInpt(true)
-        if (btnSalvar === "Salvar") {
-          const formData = new FormData();
-          if (file) {
-            formData.append('avatar', file);
-          }
-      
-          if (userFind?.id) {
-            console.log(userFind)
-            formData.append('id', String(userFind?.id));
-          }
-          else
-          {
-            console.log(user)
-            formData.append('id', String(user?.id));
-          }
-          if (name) {
-            formData.append('nome', name);
-          }
-          if (email) {
-            formData.append('email', email);
-          }
-          formData.append('password', password);
-      
-            const result = await api.put("/atualizar", formData, {
-              headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
-                toast.success('Usuário Atualizado')
-                setRegistroInpt(false)
-                if(user?.id == response.data._id)
-                {
-                    const user = {
-                        id: response.data._id,
-                        nome: response.data.nome,
-                        email: response.data.email,
-                        token: response.data.token,
-                        caminho: response.data.caminho
-                      }
-                      login(user);
-                }
-                FinderLogout();
-
-              }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
-
-        } else {
-            setRegistroInpt(true)
-            if(!email || !password || !name || displayFileName == 'Escolher imagem')
-            {
-                toast.warn('Preencha os campos')
-                setRegistroInpt(false)
-            }
-            else {
-                const response = await api.post('/register',{
-                    dsnome: name,
-                    senha: password,
-                    nome: email
-                  }).then((response) =>{
-                    const formData = new FormData();
-                    if (file) {
-                        formData.append('avatar', file);
-                      }
-                      if (name) {
-                        formData.append('nome', name);
-                      }
-                      formData.append('id', String(response.data._id));
-                    api.put("/atualizar", formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
+    const handleDelete = async () =>{
+        setDeleteInpt(true)
+        const result = await api.delete("/del", {data: { email: email}, headers:{'Authorization': `Bearer ${user?.token}`}}
+        ).then(()=>{toast.success("usuário excluido com sucesso!")
+            setDeleteInpt(false)
+        }).catch(()=>{toast.error('Erro!. Contate o administrador')
+            setDeleteInpt(false)
+        })
+    }
     
-                    }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
-                    toast.success('Usuário Cadastrado')
-                  }).catch((err)=> {toast.error('Erro!. Contate o administrador')}).finally(()=>{
-                    setRegistroInpt(false)
-                  })
-            }
+    const handleSalvar = async () => {
+    setRegistroInpt(true)
+    if (btnSalvar === "Salvar") {
+        const formData = new FormData();
+        if (file) {
+        formData.append('avatar', file);
         }
-      };
+    
+        if (userFind?.id) {
+        console.log(userFind)
+        formData.append('id', String(userFind?.id));
+        }
+        else
+        {
+        console.log(user)
+        formData.append('id', String(user?.id));
+        }
+        if (name) {
+        formData.append('nome', name);
+        }
+        if (email) {
+        formData.append('email', email);
+        }
+        formData.append('password', password);
+    
+        const result = await api.put("/atualizar", formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
+            toast.success('Usuário Atualizado')
+            setRegistroInpt(false)
+            if(user?.id == response.data._id)
+            {
+                const user = {
+                    id: response.data._id,
+                    nome: response.data.nome,
+                    email: response.data.email,
+                    token: response.data.token,
+                    caminho: response.data.caminho
+                    }
+                    login(user);
+            }
+            FinderLogout();
+
+            }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
+
+    } else {
+        setRegistroInpt(true)
+        if(!email || !password || !name || displayFileName == 'Escolher imagem')
+        {
+            toast.warn('Preencha os campos')
+            setRegistroInpt(false)
+        }
+        else {
+            const response = await api.post('/register',{
+                dsnome: name,
+                senha: password,
+                nome: email
+                }).then((response) =>{
+                const formData = new FormData();
+                if (file) {
+                    formData.append('avatar', file);
+                    }
+                    if (name) {
+                    formData.append('nome', name);
+                    }
+                    formData.append('id', String(response.data._id));
+                api.put("/atualizar", formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
+
+                }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
+                toast.success('Usuário Cadastrado')
+                }).catch((err)=> {toast.error('Erro!. Contate o administrador')}).finally(()=>{
+                setRegistroInpt(false)
+                })
+        }
+    }
+    };
 
     return(
         <main>
@@ -189,9 +199,9 @@ const Cadastro = () =>{
                     {loading && <Skeleton variant="rectangular" animation="pulse" sx={{ bgcolor: '#112131', borderRadius: 2, marginTop: 2, marginBottom: 18 }}  width={'100vh'} height={'40vh'}/>}
                     {!loading &&
                         <div className='flex-col'>
-                            <h1 className=' absolute top-10 left-30 text-xl hd:top-20 hd:left-[350px] text-[#E7EDF4] hd:text-4xl font-semibold font-Poppins'>{btnSalvar === 'Salvar' ? "Atualizar Usuário" : "Cadastre um usúario"}</h1>
+                            <h1 className=' absolute top-8 left-30 text-xl hd:top-8 hd:left-[350px] text-[#E7EDF4] hd:text-4xl font-semibold font-Poppins'>{btnSalvar === 'Salvar' ? "Atualizar Usuário" : "Cadastre um usúario"}</h1>
                             <div 
-                                className=' bg-[#0B1B2B] p-5 rounded-sm grid gap-5 hd:w-[600px] mt-[55px]  w-[290px]'>
+                                className=' bg-[#0B1B2B] p-5 rounded-sm grid gap-5 hd:w-[600px] mt-[15px]  w-[290px]'>
                                 <h2 className=' text-[#E7EDF4] text-xl font-semibold font-Poppins'>{btnSalvar === 'Salvar' ? 'Atualizar' : 'Cadastrar'}</h2>
                                 <input className=' p-3 rounded focus:outline-none placeholder-slate-200 bg-[#112131] text-slate-200' 
                                     placeholder='Nome:'
@@ -235,7 +245,7 @@ const Cadastro = () =>{
                                         onChange={handleFileChange}
                                     />
                                 </div>
-                                <button
+                                {displayFileName != 'Escolher imagem' && <button
                                     className=' p-2 w-full rounded-md border-2 border-[#3A536B] bg-[#112131] text-slate-200'
                                     type="button"
                                     style={{fontSize: `${fonte}px`}}
@@ -243,9 +253,8 @@ const Cadastro = () =>{
                                     onClick={()=>{ setFile(null) }}
                                 >
                                     Remover Foto
-                                </button>
+                                </button>}
                             </div>
-
                                     <button
                                         className=' p-2 w-full rounded-md  bg-[#3294F8] text-slate-200'
                                         type="button"
@@ -254,11 +263,23 @@ const Cadastro = () =>{
                                     >
                                         {btnSalvar}
                                     </button>
+                                    {btnSalvar != 'Cadastrar'&&
+                                    <button
+                                        className=' p-2 w-full rounded-md  bg-red-500 text-slate-200'
+                                        type="button"
+                                        disabled={registroInpt}
+                                        onClick={handleDelete}
+                                    >
+                                        Excluir
+                                    </button>
+                                    }
                             </div>
                         </div>
                     }
                 </div>
             </div>
+            
+            
         </main>
     );
 }
