@@ -3,7 +3,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { useEffect, useState, useRef, ChangeEvent } from 'react';
 import { useAuth } from "@/app/context/userContext";
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { api } from "@/utils/api";
 
 const Cadastro = () =>{
@@ -167,33 +167,51 @@ const Cadastro = () =>{
             setRegistroInpt(false)
         }
         else {
-            const response = await api.post('/register',{
-                dsnome: name,
-                senha: password,
-                nome: email
-                }).then((response) =>{
+            try {
+                // Criando um novo FormData
                 const formData = new FormData();
+            
+                // Adicionando a imagem ao formData, se disponível
                 if (file) {
                     formData.append('avatar', file);
-                    }
-                    if (name) {
-                    formData.append('nome', name);
-                    }
-                    formData.append('id', String(response.data._id));
-                api.put("/atualizar", formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }}).then((response)=>{
-
-                }).catch((err)=> {toast.error('Erro!. Contate o administrador')})
-                toast.success('Usuário Cadastrado')
-                }).catch((err)=> {toast.error('Erro!. Contate o administrador')}).finally(()=>{
-                setRegistroInpt(false)
-                })
+                }
+            
+                // Adicionando o nome e email ao formData
+                formData.append('nome', email);
+                formData.append('dsnome', name);
+            
+                // Adicionando a senha ao formData
+                formData.append('senha', password);
+            
+                // Fazendo a solicitação POST para registrar o usuário
+                const response = await api.post('/register', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+            
+                toast.success('Usuário Cadastrado');
+            } catch (err) {
+                toast.error('Erro!. Contate o administrador');
+            } finally {
+                setRegistroInpt(false);
+            }
         }
     }
     };
 
     return(
         <main>
+            <ToastContainer
+                position="top-right"
+                autoClose={500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             <div className=' h-auto flex items-center content-center justify-center'>
                 <div className=' mt-20'>
                     {loading && <Skeleton variant="rectangular" animation="pulse" sx={{ bgcolor: '#112131', borderRadius: 2, marginTop: 2, marginBottom: 18 }}  width={'100vh'} height={'40vh'}/>}
@@ -267,7 +285,7 @@ const Cadastro = () =>{
                                     <button
                                         className=' p-2 w-full rounded-md  bg-red-500 text-slate-200'
                                         type="button"
-                                        disabled={registroInpt}
+                                        disabled={deleteInpt}
                                         onClick={handleDelete}
                                     >
                                         Excluir

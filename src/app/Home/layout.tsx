@@ -9,18 +9,7 @@ interface Props {
 export default function InitialLayout({children}: {children: React.ReactNode}) {
   return (
     <main className='h-screen'>
-      <ToastContainer
-          position="top-right"
-          autoClose={500}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-      />
+     
       <div className="flex">
         <div className=' z-10'>
           <Sidebar/>
